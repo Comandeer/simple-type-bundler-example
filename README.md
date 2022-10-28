@@ -1,6 +1,6 @@
 # Simple `.d.ts` bundler example
 
-It's just an eample of a simple `.d.ts` bundler for an [article on my blog](https://blog.comandeer.pl/tworzymy-wlasny-bundler.html).
+It's just an eample of a simple `.d.ts` bundler for an [article on my blog](https://blog.comandeer.pl/tworzymy-wlasny-bundler-typow.html).
 
 ## Usage
 
