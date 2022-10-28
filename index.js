@@ -7,6 +7,7 @@ const { default: traverse } = require( '@babel/traverse' );
 const { default: generate } = require( '@babel/generator' );
 const { isImportDeclaration } = require( '@babel/types' );
 const { isExportDeclaration } = require( '@babel/types' );
+const { exportNamedDeclaration } = require( '@babel/types' );
 
 const [ , , input, output ] = process.argv;
 const cwd = process.cwd();
@@ -37,17 +38,19 @@ function processModule( path, isMain = false ) {
 
 	traverse( ast, {
 		enter( path ) {
-			if ( isExportDeclaration( path.node ) && !isMain ) {
-				return path.remove();
+			if ( isExportDeclaration( path.node ) ) {
+				return handleExport( path, {
+					isMain,
+					dir,
+					modules
+				} );
 			}
 
 			if ( !isImportDeclaration( path.node ) ) {
 				return;
 			}
 
-			const importRelativePath = createFilePath( path.node.source.value );
-			const depPath = resolvePath( dir, importRelativePath );
-			modules.push( ...processModule( depPath ) );
+			processSource( path.node, dir, modules );
 
 			path.remove();
 		}
@@ -58,6 +61,39 @@ function processModule( path, isMain = false ) {
 	modules.push( [ path, transformedCode ] );
 
 	return modules;
+}
+
+function handleExport( path, { isMain, dir, modules } ) {
+	const node = path.node;
+
+	if ( node.source ) {
+		processSource( node, dir, modules );
+	}
+
+	if ( isMain && node.source ) {
+		path.replaceWith( exportNamedDeclaration( node.declaration, node.specifiers ) );
+
+		return;
+	}
+
+	if ( isMain ) {
+		return;
+	}
+
+	if ( !isMain && node.declaration ) {
+		path.replaceWith( node.declaration );
+
+		return;
+	}
+
+	path.remove();
+}
+
+function processSource( node, dir, modules ) {
+	const importRelativePath = createFilePath( node.source.value );
+	const depPath = resolvePath( dir, importRelativePath );
+
+	modules.push( ...processModule( depPath ) );
 }
 
 function createFilePath( importSpecifier ) {
