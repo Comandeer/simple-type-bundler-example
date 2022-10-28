@@ -1,6 +1,6 @@
-# Simple bundler example
+# Simple `.d.ts` bundler example
 
-It's just an eample of a simple bundler for an [article on my blog](https://blog.comandeer.pl/tworzymy-wlasny-bundler.html).
+It's just an eample of a simple `.d.ts` bundler for an [article on my blog](https://blog.comandeer.pl/tworzymy-wlasny-bundler.html).
 
 ## Usage
 
@@ -10,4 +10,4 @@ It's just an eample of a simple bundler for an [article on my blog](https://blog
     node . <input file path> <output file path>
     ```
 
-    
+
