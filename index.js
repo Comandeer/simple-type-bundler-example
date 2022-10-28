@@ -24,7 +24,15 @@ function processModule( path ) {
 	const modules = [];
 
 	const ast = parse( code, {
-		sourceType: 'module'
+		sourceType: 'module',
+		plugins: [
+			[
+				'typescript',
+				{
+					dts: true
+				}
+			]
+		]
 	} );
 
 	traverse( ast, {
@@ -37,7 +45,8 @@ function processModule( path ) {
 				return;
 			}
 
-			const depPath = resolvePath( dir, path.node.source.value );
+			const importRelativePath = createFilePath( path.node.source.value );
+			const depPath = resolvePath( dir, importRelativePath );
 			modules.push( ...processModule( depPath ) );
 
 			path.remove();
@@ -49,4 +58,12 @@ function processModule( path ) {
 	modules.push( [ path, transformedCode ] );
 
 	return modules;
+}
+
+function createFilePath( importSpecifier ) {
+	if ( !importSpecifier.endsWith( '.d.ts' ) ) {
+		return `${ importSpecifier }.d.ts`;
+	}
+
+	return importSpecifier;
 }
