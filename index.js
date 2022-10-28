@@ -12,13 +12,13 @@ const [ , , input, output ] = process.argv;
 const cwd = process.cwd();
 const inputPath = resolvePath( cwd, input );
 const outputPath = resolvePath( cwd, output );
-const modules = processModule( inputPath );
+const modules = processModule( inputPath, true );
 const deduplicatedModules = new Map( modules );
 const bundleContent = [ ...deduplicatedModules.values() ].join( '\n' );
 
 writeFileSync( outputPath, bundleContent, 'utf8' );
 
-function processModule( path ) {
+function processModule( path, isMain = false ) {
 	const dir = dirname( path );
 	const code = readFileSync( path, 'utf8' );
 	const modules = [];
@@ -37,7 +37,7 @@ function processModule( path ) {
 
 	traverse( ast, {
 		enter( path ) {
-			if ( isExportDeclaration( path.node ) ) {
+			if ( isExportDeclaration( path.node ) && !isMain ) {
 				return path.remove();
 			}
 
