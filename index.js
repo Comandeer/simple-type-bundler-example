@@ -50,7 +50,7 @@ function processModule( path, isMain = false ) {
 				return;
 			}
 
-			processSource( path.node, dir, modules );
+			processImport( path.node, dir, modules );
 
 			path.remove();
 		}
@@ -67,7 +67,7 @@ function handleExport( path, { isMain, dir, modules } ) {
 	const node = path.node;
 
 	if ( node.source ) {
-		processSource( node, dir, modules );
+		processImport( node, dir, modules );
 	}
 
 	if ( isMain && node.source ) {
@@ -89,7 +89,7 @@ function handleExport( path, { isMain, dir, modules } ) {
 	path.remove();
 }
 
-function processSource( node, dir, modules ) {
+function processImport( node, dir, modules ) {
 	const importRelativePath = createFilePath( node.source.value );
 	const depPath = resolvePath( dir, importRelativePath );
 
