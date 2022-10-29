@@ -80,7 +80,7 @@ function handleExport( path, { isMain, dir, modules } ) {
 		return;
 	}
 
-	if ( !isMain && node.declaration ) {
+	if ( node.declaration ) {
 		path.replaceWith( node.declaration );
 
 		return;
